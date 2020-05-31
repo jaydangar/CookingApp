@@ -1,7 +1,6 @@
 import 'package:CookingApp/main.dart';
 import 'package:CookingApp/pages/home_page.dart';
 import 'package:CookingApp/pages/login.dart';
-import 'package:CookingApp/pages/main.dart';
 import 'package:flutter/material.dart';
 
 class Routing {
