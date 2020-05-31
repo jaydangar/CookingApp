@@ -16,7 +16,7 @@ class _RaisedButtonWidgetState extends State<RaisedButtonWidget> {
   @override
   Widget build(BuildContext context) {
     return RaisedButton(
-        onPressed: () => widget._action,
+        onPressed: widget._action,
         child: widget._widget,
         color: widget?._buttonColor ?? Theme.of(context).accentColor);
   }

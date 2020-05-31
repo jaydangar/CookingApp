@@ -83,7 +83,7 @@ class _HomePageListWidgetState extends State<HomePageListWidget> {
                   height: 50,
                   child: RaisedButtonWidget(
                       RichTextWidget('BOOK YOUR COOK', Icons.shopping_cart),
-                      printFun),
+                      ()=>printFun),
                 )),
           ],
         ),
@@ -91,7 +91,7 @@ class _HomePageListWidgetState extends State<HomePageListWidget> {
     );
   }
 
-  void printFun(BuildContext context) {
+  Function printFun(BuildContext context) {
     print("Hello");
   }
 
