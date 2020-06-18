@@ -17,7 +17,8 @@ class APIProvider{
       responseType: this?._responseType??ResponseType.json,
       contentType: this?._contentType??ContentType.json.toString()
     );    
-    _dio.interceptors.add(LogInterceptor());
+
+    // _dio.interceptors.add(LogInterceptor());
   }
 
   Dio get getDio{

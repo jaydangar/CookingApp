@@ -18,6 +18,7 @@ class APIRepository{
       yield HomePageLoaded(response);
     }
     on DioError catch(e){
+      print(e.type.toString());
       yield HomePageError(NetworkErrorHandler.handleError(e.type));
     }
   }
