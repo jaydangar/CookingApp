@@ -1,9 +1,10 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:CookingApp/blocs/homepage_bloc.dart';
+import 'package:CookingApp/events/network_call_event.dart';
 import 'package:CookingApp/response/cookResponse.dart';
-import 'package:CookingApp/states/home_page_states.dart';
+import 'package:CookingApp/states/network_call_states.dart';
+import 'package:CookingApp/utils/connection_check.dart';
 import 'package:CookingApp/utils/show_error_page.dart';
 import 'package:CookingApp/widgets/appbar_widget.dart';
 import 'package:CookingApp/widgets/homepage_list.dart';
@@ -18,49 +19,42 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  StreamSubscription<DataConnectionStatus> _dataConnectionChecker;
-  StreamController<DataConnectionStatus> _status;
-
-  @override
-  void initState() {
-    _status = StreamController();
-    _dataConnectionChecker = DataConnectionChecker()
-        .onStatusChange
-        .listen((DataConnectionStatus connectionStatus) {
-      _status.add(connectionStatus);
-    });
-
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBarWidget(),
-      body: StreamBuilder(
-        stream: _status.stream,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          print('snapshotData: ' + snapshot.connectionState.toString());
-          if (snapshot.data == null ||
-              snapshot.data == DataConnectionStatus.disconnected) {
-            return ShowErrorPage.showError();
-          }
-          else{
-            return BlocBuilder<HomePageBloc, HomePageState>(
-              builder: (context, state) {
-                return SafeArea(
-                    child: Container(child: _mapStateToUI(context, state)));
-              },
-            );
-          }
-        },
+    return BlocProvider(
+      create: (context) {
+        NetworkCallBloc _homePageBloc = NetworkCallBloc();
+        _homePageBloc.add(FetchDataEvent());
+        return _homePageBloc;
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBarWidget(),
+        body: SafeArea(
+          child: StreamBuilder(
+            stream: ConnectionChecker().getConnectivityResult,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              print('snapshotData: ' + snapshot.connectionState.toString());
+              if (snapshot.data == null ||
+                  snapshot.data == DataConnectionStatus.disconnected) {
+                return ShowErrorPage.showError();
+              } else {
+                return BlocBuilder<NetworkCallBloc, NetworkCallStates>(
+                  builder: (context, state) {
+                    return SafeArea(
+                        child: Container(child: _mapStateToUI(context, state)));
+                  },
+                );
+              }
+            },
+          ),
+        ),
       ),
     );
   }
 
-  Widget _mapStateToUI(BuildContext context, HomePageState state) {
-    if (state is HomePageLoaded) {
+  Widget _mapStateToUI(BuildContext context, NetworkCallStates state) {
+    if (state is LoadedState) {
       String response = jsonEncode(state.cookResponse.data);
       List<CookResponse> cookResponse = cookResponseFromJson(response);
       return ListView.builder(
@@ -72,7 +66,7 @@ class _HomepageState extends State<Homepage> {
         shrinkWrap: true,
         physics: BouncingScrollPhysics(),
       );
-    } else if (state is HomePageError) {
+    } else if (state is ErrorState) {
       return Container(
         child: Center(
           child: RichTextWidget(state.error, Icons.error),
@@ -81,12 +75,5 @@ class _HomepageState extends State<Homepage> {
     } else {
       return Scaffold();
     }
-  }
-
-  @override
-  void dispose() {
-    _status.close();
-    _dataConnectionChecker.cancel();
-    super.dispose();
   }
 }

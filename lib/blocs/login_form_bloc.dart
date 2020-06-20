@@ -1,4 +1,4 @@
-import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+import 'package:form_bloc/form_bloc.dart';
 
 class LogInFormBloc extends FormBloc<String, String> {
   final userNameField =

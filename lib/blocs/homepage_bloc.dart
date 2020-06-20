@@ -1,25 +1,26 @@
-import 'package:CookingApp/events/home_page_events.dart';
+import 'package:CookingApp/events/network_call_event.dart';
 import 'package:CookingApp/repository/api_repository.dart';
-import 'package:CookingApp/states/home_page_states.dart';
+import 'package:CookingApp/states/network_call_states.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 
-class HomePageBloc extends Bloc<HomePageEvents, HomePageState> {
+class NetworkCallBloc extends Bloc<NetworkCallEvents, NetworkCallStates> {
   APIRepository _apiRepository;
 
   @override
-  HomePageState get initialState {
+  NetworkCallStates get initialState {
     _apiRepository = APIRepository();
-    return HomePageLoading();
+    return LoadingState();
   }
 
   @override
-  Stream<HomePageState> mapEventToState(HomePageEvents event) async* {
-    if (event is FetchCookListEvent) {
+  Stream<NetworkCallStates> mapEventToState(NetworkCallEvents event) async* {
+    if (event is FetchDataEvent) {
       yield* _mapHomePageEventToState(event);
     }
   }
 
-  Stream<HomePageState> _mapHomePageEventToState(FetchCookListEvent event) async*{
+  Stream<NetworkCallStates> _mapHomePageEventToState(
+      FetchDataEvent event) async* {
     yield* _apiRepository.fetchCooks();
   }
 }

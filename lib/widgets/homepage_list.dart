@@ -29,28 +29,23 @@ class _HomePageListWidgetState extends State<HomePageListWidget> {
       child: Card(
         child: Column(
           children: <Widget>[
-            Flexible(
+            Expanded(
               child: SizedBox(
                   child: Image.asset(
                 'assets/images/cook.jpg',
                 width: double.maxFinite,
                 height: double.maxFinite,
               )),
-              flex: 4,
-              fit: FlexFit.tight,
             ),
-            Flexible(
-                flex: 1,
-                fit: FlexFit.tight,
+            Expanded(
                 child: ContainerWidget(
-                  Column(children: <Widget>[
-                    ContainerWidget(Text(' $_cookName')),
-                    ContainerWidget(
-                        Text('$_genderString | Exp : $_experience Years'))
-                  ]),
-                )),
-            Flexible(
-              flex: 1,
+              Column(children: <Widget>[
+                ContainerWidget(Text(' $_cookName')),
+                ContainerWidget(
+                    Text('$_genderString | Exp : $_experience Years'))
+              ]),
+            )),
+            Expanded(
               child: Row(
                 children: <Widget>[
                   Flexible(
@@ -65,25 +60,22 @@ class _HomePageListWidgetState extends State<HomePageListWidget> {
                 ],
               ),
             ),
-            Flexible(flex: 1, child: ContainerWidget(
+            Expanded(child: ContainerWidget(
                 //  TODO Change Distance here
                 RichTextWidget(' 5 KM', Icons.directions_car))),
-            Flexible(
-                flex: 1,
+            Expanded(
                 child: ContainerWidget(
                     RichTextWidget(' North Indian Dishes', Icons.fastfood))),
-            Flexible(
-                flex: 1,
+            Expanded(
                 child:
                     ContainerWidget(RichTextWidget(' $_language', Icons.mic))),
-            Flexible(
-                flex: 1,
+            Expanded(
                 child: SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: RaisedButtonWidget(
                       RichTextWidget('BOOK YOUR COOK', Icons.shopping_cart),
-                      ()=>printFun),
+                      () => printFun),
                 )),
           ],
         ),
@@ -95,8 +87,8 @@ class _HomePageListWidgetState extends State<HomePageListWidget> {
     print("Hello");
   }
 
-  String _getGender(String genderStr){
-    if(genderStr == "Gender.MALE"){
+  String _getGender(String genderStr) {
+    if (genderStr == "Gender.MALE") {
       return "Male";
     }
     return "Female";

@@ -1,4 +1,4 @@
-import 'package:CookingApp/states/home_page_states.dart';
+import 'package:CookingApp/states/network_call_states.dart';
 import 'package:CookingApp/utils/api_provider.dart';
 import 'package:CookingApp/utils/network_error_handler.dart';
 import 'package:dio/dio.dart';
@@ -11,15 +11,14 @@ class APIRepository{
     _apiProvider = APIProvider();
   }
   
-  Stream<HomePageState> fetchCooks() async*{
-    yield HomePageLoading();
+  Stream<NetworkCallStates> fetchCooks() async*{
+    yield LoadingState();
     try{
       Response response = await _apiProvider.getDio.get('/cooks.json',queryParameters: {'key':'0e530d10'});
-      yield HomePageLoaded(response);
+      yield LoadedState(response);
     }
     on DioError catch(e){
-      print(e.type.toString());
-      yield HomePageError(NetworkErrorHandler.handleError(e.type));
+      yield ErrorState(NetworkErrorHandler.handleError(e.type));
     }
   }
 }
