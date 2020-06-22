@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'package:CookingApp/response/cookResponse.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class NetworkCallStates extends Equatable{
@@ -11,7 +11,7 @@ class LoadingState extends NetworkCallStates{
 }
 
 class LoadedState extends NetworkCallStates{
-  final Response cookResponse;
+  final List<CookResponse> cookResponse;
   LoadedState(this.cookResponse):super();
 
   @override

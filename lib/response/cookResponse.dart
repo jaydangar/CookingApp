@@ -1,5 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
+Future<List<CookResponse>> cookResponseFromJsonIsolate(String str) async{
+  await compute(cookResponseFromJson,str);
+}
+
 List<CookResponse> cookResponseFromJson(String str) {
     final jsonData = json.decode(str);
     return new List<CookResponse>.from(jsonData.map((x) => CookResponse.fromJson(x)));

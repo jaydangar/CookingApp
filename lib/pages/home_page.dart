@@ -22,11 +22,8 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) {
-        NetworkCallBloc _homePageBloc = NetworkCallBloc();
-        _homePageBloc.add(FetchDataEvent());
-        return _homePageBloc;
-      },
+      lazy: false,
+      create: (_) => NetworkCallBloc()..add(FetchDataEvent()),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBarWidget(),
@@ -55,8 +52,8 @@ class _HomepageState extends State<Homepage> {
 
   Widget _mapStateToUI(BuildContext context, NetworkCallStates state) {
     if (state is LoadedState) {
-      String response = jsonEncode(state.cookResponse.data);
-      List<CookResponse> cookResponse = cookResponseFromJson(response);
+      // String response = jsonEncode(state.cookResponse.data);
+      // List<CookResponse> cookResponse = cookResponseFromJson(response);
       return ListView.builder(
         itemBuilder: (context, index) {
           return HomePageListWidget(cookResponse[index]);

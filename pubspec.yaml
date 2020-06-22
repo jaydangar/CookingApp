@@ -27,13 +27,20 @@ dependencies:
   equatable: ^1.1.1
   flutter_form_bloc: ^0.14.0
   data_connection_checker: ^0.3.4
-
+  kiwi: ^2.0.0
+  moor: ^3.1.0
+  moor_ffi: ^0.6.0
+  path_provider: ^1.6.11
+  path: ^1.6.4
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
     
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+  build_runner: ^1.10.0
+  moor_generator: ^3.1.0
 
 # The following section is specific to Flutter.
 flutter:
