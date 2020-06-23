@@ -1,15 +1,17 @@
 import 'package:CookingApp/events/network_call_event.dart';
-import 'package:CookingApp/repository/api_repository.dart';
+import 'package:CookingApp/repository/repository.dart';
 import 'package:CookingApp/states/network_call_states.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+import 'package:kiwi/kiwi.dart';
 
 class NetworkCallBloc extends Bloc<NetworkCallEvents, NetworkCallStates> {
-  APIRepository _apiRepository;
+  
+  Repository repository;
 
   @override
   NetworkCallStates get initialState {
-    _apiRepository = APIRepository();
-    return LoadingState();
+    repository = KiwiContainer().resolve<Repository>();
+    return InitialState(repository.fetchCooksDB);
   }
 
   @override
@@ -19,8 +21,7 @@ class NetworkCallBloc extends Bloc<NetworkCallEvents, NetworkCallStates> {
     }
   }
 
-  Stream<NetworkCallStates> _mapHomePageEventToState(
-      FetchDataEvent event) async* {
-    yield* _apiRepository.fetchCooks();
+  Stream<NetworkCallStates> _mapHomePageEventToState(FetchDataEvent event) async* {
+    yield* repository.fetchCooksAPI();
   }
 }

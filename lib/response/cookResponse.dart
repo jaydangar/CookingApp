@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:moor/moor.dart';
 
-Future<List<CookResponse>> cookResponseFromJsonIsolate(String str) async{
-  await compute(cookResponseFromJson,str);
+Future<List<CookResponse>> cookResponseFromJsonIsolate(String str){
+  return compute(cookResponseFromJson,str);
 }
 
-List<CookResponse> cookResponseFromJson(String str) {
+List<CookResponse> cookResponseFromJson(String str){
     final jsonData = json.decode(str);
     return new List<CookResponse>.from(jsonData.map((x) => CookResponse.fromJson(x)));
 }
@@ -16,7 +17,7 @@ String cookResponseToJson(List<CookResponse> data) {
     return json.encode(dyn);
 }
 
-class CookResponse {
+class CookResponse extends Table{
     String cookName;
     Gender gender;
     int experience;

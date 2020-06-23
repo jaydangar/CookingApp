@@ -1,8 +1,6 @@
-import 'dart:convert';
-
-import 'package:CookingApp/blocs/homepage_bloc.dart';
+import 'package:CookingApp/blocs/network_bloc.dart';
 import 'package:CookingApp/events/network_call_event.dart';
-import 'package:CookingApp/response/cookResponse.dart';
+import 'package:CookingApp/models/cooks.dart';
 import 'package:CookingApp/states/network_call_states.dart';
 import 'package:CookingApp/utils/connection_check.dart';
 import 'package:CookingApp/utils/show_error_page.dart';
@@ -31,7 +29,6 @@ class _HomepageState extends State<Homepage> {
           child: StreamBuilder(
             stream: ConnectionChecker().getConnectivityResult,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
-              print('snapshotData: ' + snapshot.connectionState.toString());
               if (snapshot.data == null ||
                   snapshot.data == DataConnectionStatus.disconnected) {
                 return ShowErrorPage.showError();
@@ -51,26 +48,59 @@ class _HomepageState extends State<Homepage> {
   }
 
   Widget _mapStateToUI(BuildContext context, NetworkCallStates state) {
+    
     if (state is LoadedState) {
-      // String response = jsonEncode(state.cookResponse.data);
-      // List<CookResponse> cookResponse = cookResponseFromJson(response);
-      return ListView.builder(
-        itemBuilder: (context, index) {
-          return HomePageListWidget(cookResponse[index]);
+      print("Loading from Network");
+      return FutureBuilder(
+        future: state.cookList,
+        initialData: List<Cook>(),
+        builder: (context, snapshot) {
+          if (snapshot.data!=null) {
+            List<Cook> cooks = snapshot.data;
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return HomePageListWidget(cooks.elementAt(index));
+              },
+              itemCount: cooks.length,
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+            );
+          }
+          return CircularProgressIndicator();
         },
-        itemCount: cookResponse.length,
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        physics: BouncingScrollPhysics(),
       );
-    } else if (state is ErrorState) {
+    }
+    else if (state is InitialState) {
+      print("Loading from DB");
+      return FutureBuilder(
+        future: state.cookList,
+        initialData: List<Cook>(),
+        builder: (context, snapshot) {
+          if (snapshot.data!=null) {
+            List<Cook> cooks = snapshot.data;
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return HomePageListWidget(cooks.elementAt(index));
+              },
+              itemCount: cooks.length,
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+            );
+          }
+          return CircularProgressIndicator();
+        },
+      );
+    }
+    else if (state is ErrorState) {
       return Container(
         child: Center(
           child: RichTextWidget(state.error, Icons.error),
         ),
       );
     } else {
-      return Scaffold();
+      return Container();
     }
   }
 }

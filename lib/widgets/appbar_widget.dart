@@ -1,12 +1,11 @@
 import 'package:CookingApp/widgets/text.dart';
 import 'package:flutter/material.dart';
 
-class AppBarWidget extends StatefulWidget with PreferredSizeWidget{
-
+class AppBarWidget extends StatefulWidget with PreferredSizeWidget {
   final String _title;
   final Color _color;
-
-  AppBarWidget([this._title,this._color]);
+  
+  AppBarWidget([this._title, this._color]);
 
   @override
   _AppBarWidgetState createState() => _AppBarWidgetState();
@@ -16,14 +15,13 @@ class AppBarWidget extends StatefulWidget with PreferredSizeWidget{
 }
 
 class _AppBarWidgetState extends State<AppBarWidget> {
-
-  final  defaultText = 'Cooking App';
+  final defaultText = 'Cooking App';
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: TextWidget(widget?._title??defaultText),
-      backgroundColor: widget?._color??Theme.of(context).accentColor,
+      title: TextWidget(widget?._title ?? defaultText),
+      backgroundColor: widget?._color ?? Theme.of(context).accentColor,
     );
   }
 }

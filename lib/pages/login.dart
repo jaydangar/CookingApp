@@ -1,7 +1,6 @@
 import 'package:CookingApp/blocs/login_form_bloc.dart';
 import 'package:CookingApp/utils/routing.dart';
 import 'package:CookingApp/widgets/appbar_widget.dart';
-import 'package:CookingApp/widgets/loading.dart';
 import 'package:CookingApp/widgets/raised_button_widget.dart';
 import 'package:CookingApp/widgets/text.dart';
 import 'package:CookingApp/widgets/textfield_blocbuilder.dart';
@@ -20,16 +19,13 @@ class LogInPage extends StatelessWidget {
             LogInFormBloc _logInFormBloc = context.bloc<LogInFormBloc>();
             return FormBlocListener<LogInFormBloc, String, String>(
               onSuccess: (context, state) {
-                print(state.successResponse);
-                LoadingDialog.hide(context);
                 Navigator.pushNamed(context, Routing.HomePageRoute);
               },
               onFailure: (context, state) {
                 print(state.failureResponse);
-                LoadingDialog.hide(context);
               },
               onSubmitting: (context, state) {
-                LoadingDialog.show(context);
+                
               },
               child: SafeArea(
                 child: Scaffold(

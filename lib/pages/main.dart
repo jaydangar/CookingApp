@@ -1,20 +1,18 @@
-import 'package:CookingApp/dao/cook_dao.dart';
 import 'package:CookingApp/database/cookdb.dart';
 import 'package:CookingApp/pages/login.dart';
-import 'package:CookingApp/repository/api_repository.dart';
-import 'package:CookingApp/repository/data_repository.dart';
+import 'package:CookingApp/repository/repository.dart';
 import 'package:CookingApp/utils/api_provider.dart';
 import 'package:CookingApp/utils/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:kiwi/kiwi.dart';
 
-main(List<String> args) {
+main(List<String> args){
   KiwiContainer kiwiContainer = KiwiContainer();
-  kiwiContainer.registerSingleton((container) => APIRepository());
   kiwiContainer.registerSingleton((container) => APIProvider());
-  kiwiContainer.registerSingleton((container) => DataRepository());
-  kiwiContainer.registerSingleton((container) => MyDatabase());
-  kiwiContainer.registerSingleton((container) => CookDAO(container.resolve<MyDatabase>()));
+  Future<CookDataBase> cookDataBase = $FloorCookDataBase.databaseBuilder('cookDB.db').build();
+  cookDataBase.then((CookDataBase database){
+    kiwiContainer.registerSingleton((container) => Repository(database.cookDAO));
+  });
   runApp(MainPage());
 }
 

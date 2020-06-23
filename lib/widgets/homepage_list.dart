@@ -1,11 +1,11 @@
-import 'package:CookingApp/response/cookResponse.dart';
+import 'package:CookingApp/models/cooks.dart';
 import 'package:CookingApp/widgets/container_widget.dart';
 import 'package:CookingApp/widgets/raised_button_widget.dart';
 import 'package:CookingApp/widgets/richtext_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomePageListWidget extends StatefulWidget {
-  final CookResponse _cookResponse;
+  final Cook _cookResponse;
 
   HomePageListWidget(this._cookResponse);
 
@@ -16,7 +16,7 @@ class HomePageListWidget extends StatefulWidget {
 class _HomePageListWidgetState extends State<HomePageListWidget> {
   @override
   Widget build(BuildContext context) {
-    CookResponse _response = widget._cookResponse;
+    Cook _response = widget._cookResponse;
     String _cookName = _response.cookName;
     int _experience = _response.experience;
     String _genderString = _getGender(_response.gender.toString());

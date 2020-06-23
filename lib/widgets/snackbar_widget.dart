@@ -13,7 +13,6 @@ class SnackBarWidget extends StatefulWidget {
 }
 
 class _SnackBarWidgetState extends State<SnackBarWidget> {
-
   @override
   Widget build(BuildContext context) {
     return SnackBar(
