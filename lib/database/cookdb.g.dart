@@ -128,7 +128,12 @@ class _$CookDAO extends CookDAO {
   final InsertionAdapter<Cook> _cookInsertionAdapter;
 
   @override
-  Future<List<Cook>> fetchAllCooks() async {
+  Future<void> deleteAllCooks() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM Cook');
+  }
+
+  @override
+  Future<List<Cook>> findAllCooks() async {
     return _queryAdapter.queryList('Select * FROM Cook', mapper: _cookMapper);
   }
 

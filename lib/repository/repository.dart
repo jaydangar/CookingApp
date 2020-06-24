@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:core';
 
-import 'package:CookingApp/dao/cook_dao.dart';
+import 'package:CookingApp/database/database_accessor.dart';
 import 'package:CookingApp/models/cooks.dart';
 import 'package:CookingApp/response/cookResponse.dart';
 import 'package:CookingApp/states/network_call_states.dart';
@@ -11,11 +13,11 @@ import 'package:kiwi/kiwi.dart';
 
 class Repository {
   APIProvider _apiProvider;
-  CookDAO _cookDAO;
+  DataBaseAccess _dataBaseAccess;
 
-  Repository(CookDAO cookDAO) {
+  Repository() {
     _apiProvider = KiwiContainer().resolve<APIProvider>();
-    _cookDAO = cookDAO;
+    _dataBaseAccess = KiwiContainer().resolve<DataBaseAccess>();
   }
 
   Stream<NetworkCallStates> fetchCooksAPI() async* {
@@ -36,14 +38,21 @@ class Repository {
             eachCooks.perMonthCharge,
             eachCooks.rating));
       }
-      _cookDAO.insertCooks(cookList);
-      yield LoadedState(_cookDAO.fetchAllCooks());
+      _dataBaseAccess.accessCookDAO().then((cookDAO){
+        cookDAO.deleteAllCooks();
+        cookDAO.insertCooks(cookList);
+      } );
+      yield LoadedState(fetchAllCooks);
     } on DioError catch (e) {
       yield ErrorState(NetworkErrorHandler.handleError(e.type));
     }
   }
 
-  Future<List<Cook>> get fetchCooksDB {
-    return _cookDAO.fetchAllCooks();
+  Future<List<Cook>> get fetchAllCooks {
+    return _dataBaseAccess.accessCookDAO().then((cookDAO) => cookDAO.findAllCooks());
+  }
+
+  Stream<NetworkCallStates> fetchCooksOffline() async*{
+    yield OffLineLoadState(fetchAllCooks);
   }
 }

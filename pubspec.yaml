@@ -29,6 +29,10 @@ dependencies:
   data_connection_checker: ^0.3.4
   kiwi: ^2.0.0
   floor: ^0.13.0
+  sqlite_viewer: ^1.0.3
+
+dependency_overrides:
+  path: ^1.6.4
 
 dev_dependencies:
   flutter_test:

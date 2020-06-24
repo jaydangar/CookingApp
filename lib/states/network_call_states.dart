@@ -26,6 +26,14 @@ class LoadedState extends NetworkCallStates{
   List<Object> get props => [cookList];
 }
 
+class OffLineLoadState extends NetworkCallStates{
+  final Future<List<Cook>> cookList;
+  OffLineLoadState(this.cookList):super();
+
+  @override
+  List<Object> get props => [cookList];
+}
+
 class ErrorState extends NetworkCallStates{
   final String error;
   ErrorState(this.error) : super();

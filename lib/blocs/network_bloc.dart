@@ -5,13 +5,12 @@ import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:kiwi/kiwi.dart';
 
 class NetworkCallBloc extends Bloc<NetworkCallEvents, NetworkCallStates> {
-  
   Repository repository;
 
   @override
   NetworkCallStates get initialState {
     repository = KiwiContainer().resolve<Repository>();
-    return InitialState(repository.fetchCooksDB);
+    return InitialState(repository.fetchAllCooks);
   }
 
   @override
@@ -19,9 +18,17 @@ class NetworkCallBloc extends Bloc<NetworkCallEvents, NetworkCallStates> {
     if (event is FetchDataEvent) {
       yield* _mapHomePageEventToState(event);
     }
+    if (event is FetchDataEventOffline) {
+      yield* _mapHomePageEventToOffLineState(event);
+    }
   }
 
-  Stream<NetworkCallStates> _mapHomePageEventToState(FetchDataEvent event) async* {
+  Stream<NetworkCallStates> _mapHomePageEventToState(
+      FetchDataEvent event) async* {
     yield* repository.fetchCooksAPI();
+  }
+
+  Stream<NetworkCallStates> _mapHomePageEventToOffLineState(FetchDataEventOffline event) async*{
+    yield* repository.fetchCooksOffline();
   }
 }

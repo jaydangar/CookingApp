@@ -3,13 +3,13 @@ import 'package:CookingApp/events/network_call_event.dart';
 import 'package:CookingApp/models/cooks.dart';
 import 'package:CookingApp/states/network_call_states.dart';
 import 'package:CookingApp/utils/connection_check.dart';
-import 'package:CookingApp/utils/show_error_page.dart';
 import 'package:CookingApp/widgets/appbar_widget.dart';
 import 'package:CookingApp/widgets/homepage_list.dart';
 import 'package:CookingApp/widgets/richtext_widget.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+import 'package:sqlite_viewer/sqlite_viewer.dart';
 
 class Homepage extends StatefulWidget {
   @override
@@ -24,22 +24,23 @@ class _HomepageState extends State<Homepage> {
       create: (_) => NetworkCallBloc()..add(FetchDataEvent()),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBarWidget(),
+        appBar: AppBarWidget(
+            'Main Page', Colors.amber, Icons.access_alarm, viewDatabase),
         body: SafeArea(
           child: StreamBuilder(
+            initialData: DataConnectionStatus.connected,
             stream: ConnectionChecker().getConnectivityResult,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.data == null ||
                   snapshot.data == DataConnectionStatus.disconnected) {
-                return ShowErrorPage.showError();
-              } else {
-                return BlocBuilder<NetworkCallBloc, NetworkCallStates>(
-                  builder: (context, state) {
-                    return SafeArea(
-                        child: Container(child: _mapStateToUI(context, state)));
-                  },
-                );
+                context.bloc<NetworkCallBloc>().add(FetchDataEventOffline());
               }
+              return BlocBuilder<NetworkCallBloc, NetworkCallStates>(
+                builder: (context, state) {
+                  return SafeArea(
+                      child: Container(child: _mapStateToUI(context, state)));
+                }
+              );
             },
           ),
         ),
@@ -48,14 +49,12 @@ class _HomepageState extends State<Homepage> {
   }
 
   Widget _mapStateToUI(BuildContext context, NetworkCallStates state) {
-    
     if (state is LoadedState) {
-      print("Loading from Network");
       return FutureBuilder(
         future: state.cookList,
         initialData: List<Cook>(),
         builder: (context, snapshot) {
-          if (snapshot.data!=null) {
+          if (snapshot.data != null) {
             List<Cook> cooks = snapshot.data;
             return ListView.builder(
               itemBuilder: (context, index) {
@@ -70,14 +69,13 @@ class _HomepageState extends State<Homepage> {
           return CircularProgressIndicator();
         },
       );
-    }
-    else if (state is InitialState) {
-      print("Loading from DB");
+    } else if (state is InitialState) {
+      print("Loading from DB from Initial State");
       return FutureBuilder(
         future: state.cookList,
         initialData: List<Cook>(),
         builder: (context, snapshot) {
-          if (snapshot.data!=null) {
+          if (snapshot.data != null) {
             List<Cook> cooks = snapshot.data;
             return ListView.builder(
               itemBuilder: (context, index) {
@@ -92,15 +90,38 @@ class _HomepageState extends State<Homepage> {
           return CircularProgressIndicator();
         },
       );
-    }
-    else if (state is ErrorState) {
+    } else if (state is ErrorState) {
       return Container(
         child: Center(
           child: RichTextWidget(state.error, Icons.error),
         ),
       );
-    } else {
-      return Container();
+    } else if (state is OffLineLoadState) {
+      print("Loading from DB from Offline State");
+      return FutureBuilder(
+        future: state.cookList,
+        initialData: List<Cook>(),
+        builder: (context, snapshot) {
+          if (snapshot.data != null) {
+            List<Cook> cooks = snapshot.data;
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return HomePageListWidget(cooks.elementAt(index));
+              },
+              itemCount: cooks.length,
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+            );
+          }
+          return CircularProgressIndicator();
+        },
+      );
     }
+  }
+
+  void viewDatabase() {
+    print('called');
+    Navigator.push(context, MaterialPageRoute(builder: (_) => DatabaseList()));
   }
 }
