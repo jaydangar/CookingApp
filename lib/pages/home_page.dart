@@ -5,7 +5,7 @@ import 'package:CookingApp/states/network_call_states.dart';
 import 'package:CookingApp/utils/connection_check.dart';
 import 'package:CookingApp/widgets/appbar_widget.dart';
 import 'package:CookingApp/widgets/homepage_list.dart';
-import 'package:CookingApp/widgets/richtext_widget.dart';
+import 'package:CookingApp/widgets/snackbar_widget.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
@@ -22,26 +22,35 @@ class _HomepageState extends State<Homepage> {
     return BlocProvider(
       lazy: false,
       create: (_) => NetworkCallBloc()..add(FetchDataEvent()),
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBarWidget(
-            'Main Page', Colors.amber, Icons.access_alarm, viewDatabase),
-        body: SafeArea(
-          child: StreamBuilder(
-            initialData: DataConnectionStatus.connected,
-            stream: ConnectionChecker().getConnectivityResult,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.data == null ||
-                  snapshot.data == DataConnectionStatus.disconnected) {
-                context.bloc<NetworkCallBloc>().add(FetchDataEventOffline());
+      child: SafeArea(
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: AppBarWidget(
+              'Main Page', Colors.amber, Icons.access_alarm, viewDatabase),
+          body: BlocListener<NetworkCallBloc, NetworkCallStates>(
+            listener: (context, state) {
+              if (state is OffLineLoadState) {
+                SnackBarWidget('offline mode', context, Colors.red)
+                    .buildSnackbar();
+              } else if (state is ErrorState) {
+                SnackBarWidget(state.error, context, Colors.red)
+                    .buildSnackbar();
               }
-              return BlocBuilder<NetworkCallBloc, NetworkCallStates>(
-                builder: (context, state) {
-                  return SafeArea(
-                      child: Container(child: _mapStateToUI(context, state)));
-                }
-              );
             },
+            child: StreamBuilder(
+              initialData: DataConnectionStatus.connected,
+              stream: ConnectionChecker().getConnectivityResult,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.data == null ||
+                    snapshot.data == DataConnectionStatus.disconnected) {
+                  context.bloc<NetworkCallBloc>().add(FetchDataEventOffline());
+                }
+                return BlocBuilder<NetworkCallBloc, NetworkCallStates>(
+                    builder: (context, state) {
+                  return Container(child: _mapStateToUI(context, state));
+                });
+              },
+            ),
           ),
         ),
       ),
@@ -91,13 +100,8 @@ class _HomepageState extends State<Homepage> {
         },
       );
     } else if (state is ErrorState) {
-      return Container(
-        child: Center(
-          child: RichTextWidget(state.error, Icons.error),
-        ),
-      );
+      return Container();
     } else if (state is OffLineLoadState) {
-      print("Loading from DB from Offline State");
       return FutureBuilder(
         future: state.cookList,
         initialData: List<Cook>(),
@@ -118,6 +122,7 @@ class _HomepageState extends State<Homepage> {
         },
       );
     }
+    return Center(child: CircularProgressIndicator());
   }
 
   void viewDatabase() {
